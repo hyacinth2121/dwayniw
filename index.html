@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthsday!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --pastel-pink: #ffd1dc;
+            --pastel-purple: #e0c3fc;
+            --text-color: #5d4e6d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--pastel-pink), var(--pastel-purple));
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        #intro-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            transition: all 1s ease;
+        }
+
+        .cake-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .cake-container:hover { transform: scale(1.05); }
+
+        .cake-body {
+            width: 180px;
+            height: 120px;
+            background: #fff;
+            border-radius: 15px 15px 5px 5px;
+            position: relative;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.1);
+        }
+        
+        .cake-body::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            width: 100%;
+            height: 25px;
+            background: #ff8fa3;
+            border-radius: 5px;
+        }
+
+        .candle {
+            width: 12px;
+            height: 70px;
+            background: linear-gradient(to right, #ddd, #fff, #ddd);
+            position: absolute;
+            bottom: 120px;
+            border-radius: 3px;
+            z-index: 2;
+        }
+
+        .flame {
+            width: 24px;
+            height: 40px;
+            background: radial-gradient(ellipse at bottom, #ffd700, #ff4500);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            bottom: 195px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 30px rgba(255, 165, 0, 0.8);
+            animation: flicker 0.2s infinite alternate;
+            transition: all 0.5s ease;
+            z-index: 3;
+        }
+
+        .flame.blown-out {
+            opacity: 0;
+            transform: translateX(-50%) scale(0) translateY(20px);
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); }
+            100% { transform: translateX(-50%) scale(1.1); }
+        }
+
+        .btn-start {
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: #ff8fa3;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .btn-start:hover { transform: scale(1.05); background: #ff6b85; }
+
+        .mic-status {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #666;
+            background: rgba(255,255,255,0.5);
+            padding: 5px 15px;
+            border-radius: 10px;
+        }
+        #main-section {
+            display: none;
+            padding: 40px 20px;
+            max-width: 100%;
+            margin: 0 auto;
+            text-align: center;
+            animation: fadeIn 1.5s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin: 0 auto 40px auto;
+            max-width: 700px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '❤️';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+        .card::after {
+            content: '🎂';
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            font-size: 2rem;
+            opacity: 0.3;
+        }
+
+        h1 { font-size: 3rem; color: #ff6b85; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; color: #9b59b6; margin-bottom: 20px; }
+        p { font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; color: #555; }
+
+        .gallery-wrapper {
+            width: 100%;
+            background: white;
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+
+        .gallery-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px 40px;
+            scrollbar-width: thin;
+            scroll-behavior: smooth;
+        }
+
+        .gallery-container img {
+            height: 350px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+            border: 5px solid white;
+        }
+
+        .gallery-container img:hover { 
+            transform: scale(1.08) rotate(2deg); 
+        }
+        #music-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 100;
+            color: #9b59b6;
+            font-size: 1.2rem;
+        }
+        p {
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.2rem; }
+            .gallery-container img { height: 220px; }
+            .card { padding: 25px; margin: 0 10px 30px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="intro-section">
+        <h1 style="font-size: 2rem; margin-bottom: 20px;">Make a wish! 🎂</h1>
+        
+        <div class="cake-container" id="cake-btn">
+            <div class="candle"></div>
+            <div class="flame" id="flame"></div>
+            <div class="cake-body"></div>
+        </div>
+
+        <button class="btn-start" id="start-btn">Click to Enable Mic & Start</button>
+        <div class="mic-status" id="mic-status">Waiting for you to start...</div>
+    </div>
+    <div id="main-section">
+        <div class="card">
+            <h1>Happy Birthday!</h1>
+            <h2>🎉Happiest Birthday dwaynn!🎉</h2>
+            <p>Happy Birthday dwaynie! sorry for late gift but I still wish you the best at your 19th years of living
+                I remember na may nagsabi nga sakin na bdy is nov pero hindi ko naalala na ikaw yun, still always goodluck
+                pag nasampa ka tas walang signal may God always protect you whenever or how far you will go. I hope you
+                wont get tired reaching your dreams always pray and God bless. HAPPYYY BIRTHDAYYY POOO! <br>
+                <br>
+    
+        <div class="gallery-wrapper">
+            <h2 style="margin-bottom: 15px; color: #9b59b6;">📸 Memories Gallery</h2>
+            <div class="gallery-container">
+                <img src="img\img2.jpg" alt="Memory 1">
+                <img src="img\img.jpg" alt="Memory 2">
+                <img src="img\img3.jpg" alt="Memory 3">
+                <img src="img\img4.jpg" alt="Memory 4">
+                <img src="img\img5.jpg" alt="Memory 4">
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Button -->
+    <div id="music-toggle" onclick="toggleMusic()">
+        <i class="fas fa-music"></i>
+    </div>
+
+    <!-- Audio -->
+    <audio id="bg-music" loop>
+        <source src="audio\Lil Eddie - Statue (Lyrics) - (320 Kbps).mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        /* --- LOGIC --- */
+        
+        const introSection = document.getElementById('intro-section');
+        const mainSection = document.getElementById('main-section');
+        const flame = document.getElementById('flame');
+        const startBtn = document.getElementById('start-btn');
+        const cakeBtn = document.getElementById('cake-btn');
+        const micStatus = document.getElementById('mic-status');
+        
+        const bgMusic = document.getElementById('bg-music');
+        const musicToggle = document.getElementById('music-toggle');
+        let isMusicOn = false;
+
+        let audioContext;
+        let analyser;
+        let microphone;
+        let javascriptNode;
+        let blowDetected = false;
+
+        // 1. Start Button (Initializes Audio Context & Mic)
+        startBtn.addEventListener('click', async () => {
+            startBtn.innerText = "Listening...";
+            micStatus.innerText = "Allow microphone access if prompted";
+            
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                microphone = audioContext.createMediaStreamSource(stream);
+                analyser = audioContext.createAnalyser();
+                javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+
+                analyser.smoothingTimeConstant = 0.8;
+                analyser.fftSize = 1024;
+
+                microphone.connect(analyser);
+                analyser.connect(javascriptNode);
+                javascriptNode.connect(audioContext.destination);
+
+                javascriptNode.onaudioprocess = function() {
+                    const array = new Uint8Array(analyser.frequencyBinCount);
+                    analyser.getByteFrequencyData(array);
+                    let values = 0;
+                    const length = array.length;
+                    
+                    for (let i = 0; i < length; i++) {
+                        values += array[i];
+                    }
+                    const average = values / length;
+
+                    if (average > 20 && !blowDetected) {
+                        blowOutCandle();
+                    }
+                }
+                
+                micStatus.innerText = "Mic Active! Blow on the candle or click it!";
+                startBtn.style.display = "none";
+                startBtn.disabled = true;
+
+            } catch (err) {
+                console.error(err);
+                micStatus.innerText = "Mic access denied. Click the candle manually!";
+                startBtn.style.display = "none";
+            }
+        });
+
+        // 2. Cake Click Event
+        cakeBtn.addEventListener('click', blowOutCandle);
+
+        // 3. The Blowing Effect
+        function blowOutCandle() {
+            if(blowDetected) return;
+            blowDetected = true;
+
+            flame.classList.add('blown-out');
+            micStatus.innerText = "Wish granted! 🎉";
+
+            // Confetti Explosion
+            confetti({
+                particleCount: 200,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff6b85', '#ffd1dc', '#c5a3ff', '#ffe66d']
+            });
+
+            // AUTO PLAY MUSIC WHEN BLOWING
+            playMusic();
+
+            setTimeout(() => {
+                introSection.style.opacity = "0";
+                setTimeout(() => {
+                    introSection.style.display = "none";
+                    mainSection.style.display = "block";
+                    window.scrollTo(0,0);
+                }, 1000);
+            }, 1000);
+        }
+
+        // 4. Play Music Function (Auto)
+        function playMusic() {
+            bgMusic.volume = 0.5;
+            bgMusic.play().catch(e => console.log("Audio play failed", e));
+            musicToggle.style.background = "#9b59b6";
+            musicToggle.style.color = "white";
+            musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
+            isMusicOn = true;
+        }
+
+        // 5. Toggle Music Manual
+        function toggleMusic() {
+            if (isMusicOn) {
+                bgMusic.pause();
+                musicToggle.style.background = "white";
+                musicToggle.style.color = "#9b59b6";
+                musicToggle.innerHTML = '<i class="fas fa-music"></i>';
+            } else {
+                playMusic();
+            }
+            isMusicOn = !isMusicOn;
+        }
+    </script>
+</body>
+</html>
